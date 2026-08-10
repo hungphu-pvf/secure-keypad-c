@@ -51,11 +51,26 @@ if (*so_lan_sai >= 3)
 }
 return false; // trạng thái mặc định của két
 }
-
+// Hàm báo lỗi 
+void phat_canh_bao(int ma_loi)
+{
+switch (ma_loi)
+{
+    case 1:
+printf("---Cảnh báo cạy két !---\n");
+break;
+case 2: 
+printf("---Lỗi nhiễu điện, bỏ qua---\n");
+break;
+case 3: 
+printf("---Phím không hợp lệ, vui lòng thử lại---\n");
+break;
+}
+}
 int main()
 { 
-    const int CORRECT_PIN[] = {1,0,5,0,8};
-    int user_input[5];
+    int CORRECT_PIN[] = {1,0,5,0,8}; // mật khẩu két sắt (có thể thay đổi)
+    int user_input[5]; // giá trị người dùng nhập
     int so_lan_sai = 0;
     while (1)
     {
@@ -68,11 +83,12 @@ int main()
         int j = doc_phim(i);
 if (j==99)
     {
-        printf("Cảnh báo cạy két !\n"); return 0;
+      phat_canh_bao(1);
+      return 0;
     }
     if (j==-1)
     {
-        printf("Lỗi nhiễu điện, bỏ qua\n");
+     phat_canh_bao(2);
         i--; continue;
  }
  if (j>=0 && j<=9)
@@ -81,7 +97,7 @@ if (j==99)
         user_input[i-1] = j;
     }
      else { 
-      printf("Phím không hợp lệ, vui lòng thử lại\n");
+      phat_canh_bao(3);
       i--;
      }
     }
@@ -93,7 +109,4 @@ break;
 }
 }
 return 0;
-}
-}
-else { printf("Sai mật khẩu, hãy thử lại !\n"); }
 }
