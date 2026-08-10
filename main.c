@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <windows.h>
 // Hàm đọc phím
  int doc_phim(int luot_quet) 
  {
@@ -22,13 +23,45 @@ bool so_sanh_mat_khau(int so_duoc_nhap[], const int so_dung[], int do_dai)
     }
 return hop_le;
 }
+// Hàm đếm sai và tạm khóa
+bool kiem_tra_lan_sai(bool hop_le , int *so_lan_sai)
+{
+if (hop_le) 
+{ 
+    printf("Mở khóa thành công\n");
+    *so_lan_sai = 0;
+    return false;
+}
+else { 
+    (*so_lan_sai)++;
+    int luot_con_lai = 3 - *so_lan_sai;
+    printf("Bạn đã nhập sai %d lần, còn lại: %d\n", *so_lan_sai, luot_con_lai);
+}
+if (*so_lan_sai >= 3)
+{
+    printf("Mở khóa thất bại, vui lòng chờ...\n");
+    int sec;
+    for (sec = 60 ; sec > 0 ; sec--)
+    {
+        printf("Vui lòng chờ %d giây để thử lại\n", sec);
+        Sleep(1000);
+}
+ *so_lan_sai = 0;
+    return false;
+}
+return false; // trạng thái mặc định của két
+}
 
 int main()
 { 
     const int CORRECT_PIN[] = {1,0,5,0,8};
     int user_input[5];
-    // i là lượt quét
+    int so_lan_sai = 0;
+    while (1)
+    {
+        // i là lượt quét
     int i;
+    printf("---Vui lòng nhập mật khẩu---\n");
     for (i=1;i<=5;i++) 
     {
         // j là tín hiệu
@@ -52,9 +85,15 @@ if (j==99)
       i--;
      }
     }
-if (so_sanh_mat_khau(user_input , CORRECT_PIN , 5))
+bool hop_le = so_sanh_mat_khau(user_input , CORRECT_PIN , 5);
+bool bi_khoa = kiem_tra_lan_sai(hop_le , &so_lan_sai);
+if (bi_khoa || hop_le)
 {
-    printf("Mở khóa thành công !\n");
+break;
+}
+}
+return 0;
+}
 }
 else { printf("Sai mật khẩu, hãy thử lại !\n"); }
 }
