@@ -67,6 +67,34 @@ printf("---Phím không hợp lệ, vui lòng thử lại---\n");
 break;
 }
 }
+// Hàm đổi mật khẩu
+void doi_mat_khau(int mat_khau_hien_tai[] , int do_dai)
+{
+    int lua_chon;
+     int so_moi[5];
+      int k;
+   printf("---Bạn có muốn đổi mật khẩu không ? (1:Có , 0: Bỏ qua)---\n");
+   scanf("%d", &lua_chon);
+   switch (lua_chon)
+   {
+    case 0:
+    break;
+
+    case 1:
+    printf("Vui lòng nhập mật khẩu mới %d chữ số\n" , do_dai);
+    for (k = 0 ; k < do_dai ; k++)
+    {
+        printf("Nhập số thứ %d: ", k+1);
+        scanf("%d", &so_moi[k]);
+        mat_khau_hien_tai[k] = so_moi[k];
+    }
+    printf("---Đã cập nhật thành công !---\n");
+    break;
+
+default:
+printf("---Giữ nguyên mật khẩu cũ---\n");
+   }
+}
 int main()
 { 
     int CORRECT_PIN[] = {1,0,5,0,8}; // mật khẩu két sắt (có thể thay đổi)
@@ -102,9 +130,10 @@ if (j==99)
      }
     }
 bool hop_le = so_sanh_mat_khau(user_input , CORRECT_PIN , 5);
-bool bi_khoa = kiem_tra_lan_sai(hop_le , &so_lan_sai);
-if (bi_khoa || hop_le)
+kiem_tra_lan_sai(hop_le , &so_lan_sai);
+if (hop_le)
 {
+    doi_mat_khau(CORRECT_PIN , 5);
 break;
 }
 }
