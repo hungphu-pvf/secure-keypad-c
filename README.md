@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <windows.h>
 // Hàm đọc phím
  int doc_phim(int luot_quet) 
  {
@@ -22,24 +23,100 @@ bool so_sanh_mat_khau(int so_duoc_nhap[], const int so_dung[], int do_dai)
     }
 return hop_le;
 }
+// Hàm đếm sai và tạm khóa
+bool kiem_tra_lan_sai(bool hop_le , int *so_lan_sai)
+{
+if (hop_le) 
+{ 
+    printf("Mở khóa thành công\n");
+    *so_lan_sai = 0;
+    return false;
+}
+else { 
+    (*so_lan_sai)++;
+    int luot_con_lai = 3 - *so_lan_sai;
+    printf("Bạn đã nhập sai %d lần, còn lại: %d\n", *so_lan_sai, luot_con_lai);
+}
+if (*so_lan_sai >= 3)
+{
+    printf("Mở khóa thất bại, vui lòng chờ...\n");
+    int sec;
+    for (sec = 60 ; sec > 0 ; sec--)
+    {
+        printf("Vui lòng chờ %d giây để thử lại\n", sec);
+        Sleep(1000);
+}
+ *so_lan_sai = 0;
+    return false;
+}
+return false; // trạng thái mặc định của két
+}
+// Hàm báo lỗi 
+void phat_canh_bao(int ma_loi)
+{
+switch (ma_loi)
+{
+    case 1:
+printf("---Cảnh báo cạy két !---\n");
+break;
+case 2: 
+printf("---Lỗi nhiễu điện, bỏ qua---\n");
+break;
+case 3: 
+printf("---Phím không hợp lệ, vui lòng thử lại---\n");
+break;
+}
+}
+// Hàm đổi mật khẩu
+void doi_mat_khau(int mat_khau_hien_tai[] , int do_dai)
+{
+    int lua_chon;
+     int so_moi[5];
+      int k;
+   printf("---Bạn có muốn đổi mật khẩu không ? (1:Có , 0: Bỏ qua)---\n");
+   scanf("%d", &lua_chon);
+   switch (lua_chon)
+   {
+    case 0:
+    break;
 
+    case 1:
+    printf("Vui lòng nhập mật khẩu mới %d chữ số\n" , do_dai);
+    for (k = 0 ; k < do_dai ; k++)
+    {
+        printf("Nhập số thứ %d: ", k+1);
+        scanf("%d", &so_moi[k]);
+        mat_khau_hien_tai[k] = so_moi[k];
+    }
+    printf("---Đã cập nhật thành công !---\n");
+    break;
+
+default:
+printf("---Giữ nguyên mật khẩu cũ---\n");
+   }
+}
 int main()
 { 
-    const int CORRECT_PIN[] = {1,0,5,0,8};
-    int user_input[5];
-    // i là lượt quét
+    int CORRECT_PIN[] = {1,0,5,0,8}; // mật khẩu két sắt (có thể thay đổi)
+    int user_input[5]; // giá trị người dùng nhập
+    int so_lan_sai = 0;
+    while (1)
+    {
+        // i là lượt quét
     int i;
+    printf("---Vui lòng nhập mật khẩu---\n");
     for (i=1;i<=5;i++) 
     {
         // j là tín hiệu
         int j = doc_phim(i);
 if (j==99)
     {
-        printf("Cảnh báo cạy két !\n"); return 0;
+      phat_canh_bao(1);
+      return 0;
     }
     if (j==-1)
     {
-        printf("Lỗi nhiễu điện, bỏ qua\n");
+     phat_canh_bao(2);
         i--; continue;
  }
  if (j>=0 && j<=9)
@@ -48,13 +125,17 @@ if (j==99)
         user_input[i-1] = j;
     }
      else { 
-      printf("Phím không hợp lệ, vui lòng thử lại\n");
+      phat_canh_bao(3);
       i--;
      }
     }
-if (so_sanh_mat_khau(user_input , CORRECT_PIN , 5))
+bool hop_le = so_sanh_mat_khau(user_input , CORRECT_PIN , 5);
+kiem_tra_lan_sai(hop_le , &so_lan_sai);
+if (hop_le)
 {
-    printf("Mở khóa thành công !\n");
+    doi_mat_khau(CORRECT_PIN , 5);
+break;
 }
-else { printf("Sai mật khẩu, hãy thử lại !\n"); }
+}
+return 0;
 }
